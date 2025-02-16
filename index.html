@@ -15,16 +15,27 @@
             background-color: #282c34;
             color: white;
         }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 600px;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+        }
         textarea {
-            width: 80%;
-            height: 200px;
+            width: 100%;
+            height: 150px;
             margin: 10px 0;
             padding: 10px;
-            background: #1e1e1e;
+            background: #333;
             color: #fff;
             border: none;
             outline: none;
             font-size: 14px;
+            border-radius: 5px;
         }
         button, select {
             padding: 10px 15px;
@@ -41,27 +52,53 @@
         input[type="file"] {
             margin: 10px 0;
         }
+        .progress-container {
+            width: 100%;
+            background: #444;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 10px;
+            width: 0%;
+            background: #61dafb;
+            transition: width 0.3s;
+        }
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            background: url('censored_thumbnail.png') center/cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    <h2>Roblox Script Editor & Ultimate Obfuscator</h2>
-    <input type="file" id="fileInput" accept=".txt">
-    <textarea id="scriptInput" placeholder="Paste your script here..."></textarea>
-    <select id="obfuscationLevel">
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="highest">Highest</option>
-        <option value="hard">Hard</option>
-        <option value="veryHard">Very Hard</option>
-        <option value="strongHard">Strong Hard</option>
-        <option value="chaotic">Chaotic</option>
-        <option value="superChaotic">Super Chaotic</option>
-        <option value="infinite">Infinite</option>
-    </select>
-    <button onclick="obfuscateScript()">Obfuscate</button>
-    <button onclick="copyObfuscated()">Copy Obfuscated Script</button>
-    <button onclick="downloadObfuscated()">Download Obfuscated Script</button>
-    <textarea id="obfuscatedOutput" readonly placeholder="Obfuscated script will appear here..."></textarea>
+    <div class="container">
+        <div class="thumbnail"></div>
+        <h2>Roblox Script Editor & Ultimate Obfuscator</h2>
+        <input type="file" id="fileInput" accept=".txt">
+        <textarea id="scriptInput" placeholder="Paste your script here..."></textarea>
+        <select id="obfuscationLevel">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="highest">Highest</option>
+            <option value="hard">Hard</option>
+            <option value="veryHard">Very Hard</option>
+            <option value="strongHard">Strong Hard</option>
+            <option value="chaotic">Chaotic</option>
+            <option value="superChaotic">Super Chaotic</option>
+            <option value="infinite">Infinite</option>
+        </select>
+        <button onclick="obfuscateScript()">Obfuscate</button>
+        <button onclick="copyObfuscated()">Copy Obfuscated Script</button>
+        <button onclick="downloadObfuscated()">Download Obfuscated Script</button>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <textarea id="obfuscatedOutput" readonly placeholder="Obfuscated script will appear here..."></textarea>
+    </div>
     
     <script>
         document.getElementById("fileInput").addEventListener("change", function(event) {
@@ -79,40 +116,34 @@
             let input = document.getElementById("scriptInput").value;
             let level = document.getElementById("obfuscationLevel").value;
             let obfuscated = input;
-            
-            switch(level) {
-                case "easy":
-                    obfuscated = input.split('').reverse().join('');
-                    break;
-                case "medium":
-                    obfuscated = input.replace(/./g, char => `\x${char.charCodeAt(0).toString(16)}`);
-                    break;
-                case "highest":
-                    obfuscated = input.split('').map(char => `\"${char.charCodeAt(0)}\"`).join("..");
-                    break;
-                case "hard":
-                    obfuscated = obfuscated.replace(/./g, char => `\\x${char.charCodeAt(0).toString(16)}`);
-                    break;
-                case "veryHard":
-                    obfuscated = obfuscated.split('').map(char => `string.char(${char.charCodeAt(0)})`).join("..") + "..";
-                    break;
-                case "strongHard":
-                    obfuscated = obfuscated.replace(/./g, char => `\"${char.charCodeAt(0)}\"`);
-                    break;
-                case "chaotic":
-                    obfuscated = `local x = {${obfuscated.split('').map(char => `"${char.charCodeAt(0)}"`).join(",")}} local s='' for i=1,#x do s=s..string.char(tonumber(x[i])) end loadstring(s)()`;
-                    break;
-                case "superChaotic":
-                    obfuscated = `local function obf() local _ = {${obfuscated.split('').map(char => `"${char.charCodeAt(0)}"`).join(",")}} local s='' for i=1,#_ do s=s..string.char(tonumber(_[i])) end loadstring(s)() end obf();`;
-                    break;
-                case "infinite":
-                    obfuscated = `while true do local function inf() local _ = {${obfuscated.split('').map(char => `"${char.charCodeAt(0)}"`).join(",")}} local s='' for i=1,#_ do s=s..string.char(tonumber(_[i])) end loadstring(s)() end inf(); end`;
-                    break;
-            }
-            
-            document.getElementById("obfuscatedOutput").value = obfuscated;
+            let progressBar = document.getElementById("progressBar");
+            progressBar.style.width = "0%";
+
+            setTimeout(() => {
+                progressBar.style.width = "100%";
+                
+                switch(level) {
+                    case "easy":
+                        obfuscated = input.split('').reverse().join('');
+                        break;
+                    case "medium":
+                        obfuscated = input.replace(/./g, char => `\x${char.charCodeAt(0).toString(16)}`);
+                        break;
+                    case "highest":
+                        obfuscated = input.split('').map(char => `\"${char.charCodeAt(0)}\"`).join("..");
+                        break;
+                    case "hard":
+                        obfuscated = obfuscated.replace(/./g, char => `\\x${char.charCodeAt(0).toString(16)}`);
+                        break;
+                    case "chaotic":
+                        obfuscated = `local x = {${obfuscated.split('').map(char => `"${char.charCodeAt(0)}"`).join(",")}} local s='' for i=1,#x do s=s..string.char(tonumber(x[i])) end loadstring(s)()`;
+                        break;
+                }
+
+                document.getElementById("obfuscatedOutput").value = obfuscated;
+            }, 1000);
         }
-        
+
         function copyObfuscated() {
             let output = document.getElementById("obfuscatedOutput");
             output.select();
