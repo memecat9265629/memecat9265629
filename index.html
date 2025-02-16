@@ -51,7 +51,7 @@
         function obfuscateScript() {
             let input = document.getElementById("scriptInput").value;
             let obfuscated = btoa(input); // Basic base64 obfuscation (not MoonSec V3)
-            document.getElementById("obfuscatedOutput").value = "loadstring(game:HttpGet(\"data:text/plain;base64," + obfuscated + "\"))()";
+            document.getElementById("obfuscatedOutput").value = `loadstring(game:HttpGet(\"${obfuscated}\"))()`;
         }
         
         function copyObfuscated() {
