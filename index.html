@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Script Editor & Obfuscator</title>
+    <title>Roblox Script Editor & Super Chaotic Obfuscator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,24 +41,39 @@
     </style>
 </head>
 <body>
-    <h2>Roblox Script Editor & Obfuscator</h2>
+    <h2>Roblox Script Editor & Super Chaotic Obfuscator</h2>
     <textarea id="scriptInput" placeholder="Paste your script here..."></textarea>
     <button onclick="obfuscateScript()">Obfuscate</button>
     <button onclick="copyObfuscated()">Copy Obfuscated Script</button>
     <textarea id="obfuscatedOutput" readonly placeholder="Obfuscated script will appear here..."></textarea>
     
     <script>
+        function generateJunkCode() {
+            let junk = "";
+            for (let i = 0; i < 10; i++) {
+                junk += `local var${Math.random().toString(36).substring(7)} = ${Math.random()}\n`;
+            }
+            return junk;
+        }
+        
+        function shuffleString(str) {
+            return str.split('').sort(() => Math.random() - 0.5).join('');
+        }
+        
         function obfuscateScript() {
             let input = document.getElementById("scriptInput").value;
-            let obfuscated = btoa(input); // Basic base64 obfuscation (not MoonSec V3)
-            document.getElementById("obfuscatedOutput").value = `loadstring(game:HttpGet(\"${obfuscated}\"))()`;
+            let junkCode = generateJunkCode();
+            let shuffled = shuffleString(input); // Chaotic shuffling
+            let encoded = btoa(junkCode + shuffled + junkCode); // Double junk with base64
+            let finalScript = `local function x() loadstring(game:HttpGet("${encoded}"))() end x();`;
+            document.getElementById("obfuscatedOutput").value = finalScript;
         }
         
         function copyObfuscated() {
             let output = document.getElementById("obfuscatedOutput");
             output.select();
             document.execCommand("copy");
-            alert("Obfuscated script copied!");
+            alert("Super Chaotic Obfuscated script copied!");
         }
     </script>
 </body>
