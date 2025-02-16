@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Script Editor & Super Chaotic Evil Obfuscator</title>
+    <title>Roblox Script Editor & Ultimate Obfuscator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,7 +26,7 @@
             outline: none;
             font-size: 14px;
         }
-        button {
+        button, select {
             padding: 10px 15px;
             margin: 5px;
             border: none;
@@ -35,7 +35,7 @@
             font-size: 16px;
             border-radius: 5px;
         }
-        button:hover {
+        button:hover, select:hover {
             background: #21a1f1;
         }
         input[type="file"] {
@@ -44,9 +44,20 @@
     </style>
 </head>
 <body>
-    <h2>Roblox Script Editor & Super Chaotic Evil Obfuscator</h2>
+    <h2>Roblox Script Editor & Ultimate Obfuscator</h2>
     <input type="file" id="fileInput" accept=".txt">
     <textarea id="scriptInput" placeholder="Paste your script here..."></textarea>
+    <select id="obfuscationLevel">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="highest">Highest</option>
+        <option value="hard">Hard</option>
+        <option value="veryHard">Very Hard</option>
+        <option value="strongHard">Strong Hard</option>
+        <option value="chaotic">Chaotic</option>
+        <option value="superChaotic">Super Chaotic</option>
+        <option value="infinite">Infinite</option>
+    </select>
     <button onclick="obfuscateScript()">Obfuscate</button>
     <button onclick="copyObfuscated()">Copy Obfuscated Script</button>
     <button onclick="downloadObfuscated()">Download Obfuscated Script</button>
@@ -66,16 +77,47 @@
 
         function obfuscateScript() {
             let input = document.getElementById("scriptInput").value;
-            let obfuscated = input.split('').map(char => `\"${char.charCodeAt(0)}\"`).join("..") + "..";
-            let finalScript = `local function evil() local _ = {${obfuscated}} local s='' for i=1,#_ do s=s..string.char(tonumber(_[i])) end loadstring(s)() end evil();`;
-            document.getElementById("obfuscatedOutput").value = finalScript;
+            let level = document.getElementById("obfuscationLevel").value;
+            let obfuscated = input;
+            
+            switch(level) {
+                case "easy":
+                    obfuscated = input.split('').reverse().join('');
+                    break;
+                case "medium":
+                    obfuscated = input.replace(/./g, char => `\x${char.charCodeAt(0).toString(16)}`);
+                    break;
+                case "highest":
+                    obfuscated = input.split('').map(char => `\"${char.charCodeAt(0)}\"`).join("..");
+                    break;
+                case "hard":
+                    obfuscated = obfuscated.replace(/./g, char => `\\x${char.charCodeAt(0).toString(16)}`);
+                    break;
+                case "veryHard":
+                    obfuscated = obfuscated.split('').map(char => `string.char(${char.charCodeAt(0)})`).join("..") + "..";
+                    break;
+                case "strongHard":
+                    obfuscated = obfuscated.replace(/./g, char => `\"${char.charCodeAt(0)}\"`);
+                    break;
+                case "chaotic":
+                    obfuscated = `local x = {${obfuscated.split('').map(char => `"${char.charCodeAt(0)}"`).join(",")}} local s='' for i=1,#x do s=s..string.char(tonumber(x[i])) end loadstring(s)()`;
+                    break;
+                case "superChaotic":
+                    obfuscated = `local function obf() local _ = {${obfuscated.split('').map(char => `"${char.charCodeAt(0)}"`).join(",")}} local s='' for i=1,#_ do s=s..string.char(tonumber(_[i])) end loadstring(s)() end obf();`;
+                    break;
+                case "infinite":
+                    obfuscated = `while true do local function inf() local _ = {${obfuscated.split('').map(char => `"${char.charCodeAt(0)}"`).join(",")}} local s='' for i=1,#_ do s=s..string.char(tonumber(_[i])) end loadstring(s)() end inf(); end`;
+                    break;
+            }
+            
+            document.getElementById("obfuscatedOutput").value = obfuscated;
         }
         
         function copyObfuscated() {
             let output = document.getElementById("obfuscatedOutput");
             output.select();
             document.execCommand("copy");
-            alert("Super Chaotic Evil Obfuscated script copied!");
+            alert("Obfuscated script copied!");
         }
         
         function downloadObfuscated() {
