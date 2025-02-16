@@ -64,8 +64,7 @@
             let input = document.getElementById("scriptInput").value;
             let junkCode = generateJunkCode();
             let shuffled = shuffleString(input); // Chaotic shuffling
-            let encoded = btoa(junkCode + shuffled + junkCode); // Double junk with base64
-            let finalScript = `local function x() loadstring(game:HttpGet("${encoded}"))() end x();`;
+            let finalScript = `${junkCode}${shuffled}${junkCode}`;
             document.getElementById("obfuscatedOutput").value = finalScript;
         }
         
