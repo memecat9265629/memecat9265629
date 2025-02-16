@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Script Editor & Super Chaotic Obfuscator</title>
+    <title>Roblox Script Editor & Super Chaotic Evil Obfuscator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,30 +41,17 @@
     </style>
 </head>
 <body>
-    <h2>Roblox Script Editor & Super Chaotic Obfuscator</h2>
+    <h2>Roblox Script Editor & Super Chaotic Evil Obfuscator</h2>
     <textarea id="scriptInput" placeholder="Paste your script here..."></textarea>
     <button onclick="obfuscateScript()">Obfuscate</button>
     <button onclick="copyObfuscated()">Copy Obfuscated Script</button>
     <textarea id="obfuscatedOutput" readonly placeholder="Obfuscated script will appear here..."></textarea>
     
     <script>
-        function generateJunkCode() {
-            let junk = "";
-            for (let i = 0; i < 10; i++) {
-                junk += `local var${Math.random().toString(36).substring(7)} = ${Math.random()}\n`;
-            }
-            return junk;
-        }
-        
-        function shuffleString(str) {
-            return str.split('').sort(() => Math.random() - 0.5).join('');
-        }
-        
         function obfuscateScript() {
             let input = document.getElementById("scriptInput").value;
-            let junkCode = generateJunkCode();
-            let shuffled = shuffleString(input); // Chaotic shuffling
-            let finalScript = `${junkCode}${shuffled}${junkCode}`;
+            let obfuscated = input.split('').map(char => `\"${char.charCodeAt(0)}\"`).join("..") + "..";
+            let finalScript = `local function evil() local _ = {${obfuscated}} local s='' for i=1,#_ do s=s..string.char(tonumber(_[i])) end loadstring(s)() end evil();`;
             document.getElementById("obfuscatedOutput").value = finalScript;
         }
         
@@ -72,7 +59,7 @@
             let output = document.getElementById("obfuscatedOutput");
             output.select();
             document.execCommand("copy");
-            alert("Super Chaotic Obfuscated script copied!");
+            alert("Super Chaotic Evil Obfuscated script copied!");
         }
     </script>
 </body>
