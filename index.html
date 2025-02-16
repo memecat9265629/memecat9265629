@@ -38,16 +38,32 @@
         button:hover {
             background: #21a1f1;
         }
+        input[type="file"] {
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <h2>Roblox Script Editor & Super Chaotic Evil Obfuscator</h2>
+    <input type="file" id="fileInput" accept=".txt">
     <textarea id="scriptInput" placeholder="Paste your script here..."></textarea>
     <button onclick="obfuscateScript()">Obfuscate</button>
     <button onclick="copyObfuscated()">Copy Obfuscated Script</button>
+    <button onclick="downloadObfuscated()">Download Obfuscated Script</button>
     <textarea id="obfuscatedOutput" readonly placeholder="Obfuscated script will appear here..."></textarea>
     
     <script>
+        document.getElementById("fileInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("scriptInput").value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        });
+
         function obfuscateScript() {
             let input = document.getElementById("scriptInput").value;
             let obfuscated = input.split('').map(char => `\"${char.charCodeAt(0)}\"`).join("..") + "..";
@@ -60,6 +76,17 @@
             output.select();
             document.execCommand("copy");
             alert("Super Chaotic Evil Obfuscated script copied!");
+        }
+        
+        function downloadObfuscated() {
+            let obfuscatedScript = document.getElementById("obfuscatedOutput").value;
+            let blob = new Blob([obfuscatedScript], { type: "text/plain" });
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "obfuscated_script.txt";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
     </script>
 </body>
