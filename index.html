@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Script Editor & Obfuscator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+        }
+        textarea {
+            width: 80%;
+            height: 200px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #1e1e1e;
+            color: #fff;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            background: #61dafb;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #21a1f1;
+        }
+    </style>
+</head>
+<body>
+    <h2>Roblox Script Editor & Obfuscator</h2>
+    <textarea id="scriptInput" placeholder="Paste your script here..."></textarea>
+    <button onclick="obfuscateScript()">Obfuscate</button>
+    <button onclick="copyObfuscated()">Copy Obfuscated Script</button>
+    <textarea id="obfuscatedOutput" readonly placeholder="Obfuscated script will appear here..."></textarea>
+    
+    <script>
+        function obfuscateScript() {
+            let input = document.getElementById("scriptInput").value;
+            let obfuscated = btoa(input); // Basic base64 obfuscation (not MoonSec V3)
+            document.getElementById("obfuscatedOutput").value = "loadstring(game:HttpGet(\"data:text/plain;base64," + obfuscated + "\"))()";
+        }
+        
+        function copyObfuscated() {
+            let output = document.getElementById("obfuscatedOutput");
+            output.select();
+            document.execCommand("copy");
+            alert("Obfuscated script copied!");
+        }
+    </script>
+</body>
+</html>
