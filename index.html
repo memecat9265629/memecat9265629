@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat's RNG Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7f7f7;
+        }
+
+        #catImage {
+            width: 100px;
+            height: 100px;
+            margin: 20px;
+        }
+
+        #coinDisplay {
+            font-size: 24px;
+            margin: 10px;
+        }
+
+        #rollButton, #upgradeButton, #upgradeSoggyCatButton, #upgradeWerewolfButton, #rebirthButton, #saveButton,
+        #toggleChanceButton, #toggleSkipButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        #shop {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #chanceList {
+            margin-top: 20px;
+            font-size: 16px;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+
+        .upgradeOption {
+            padding: 5px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #rebirthDisplay {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        #catShopImage {
+            width: 150px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cat’s RNG Game</h1>
+
+    <img id="catImage" src="https://placekitten.com/200/200" alt="Cat Image">
+    
+    <div id="coinDisplay">
+        Coins: <span id="coinCount">0</span>
+    </div>
+
+    <button id="rollButton">Roll</button>
+    <button id="toggleChanceButton">Toggle Chance List</button>
+    <button id="toggleSkipButton">Click to Toggle Skip</button>
+
+    <div id="chanceList" class="hidden">
+        <p>Chance Breakdown:</p>
+        <ul>
+            <li>Common - 80%</li>
+            <li>Uncommon - 75%</li>
+            <li>Rare - 50%</li>
+            <li>Epic - 35%</li>
+            <li>Legendary - 10%</li>
+            <li>Mythical - 5%</li>
+            <li>Secret - 0.5%</li>
+        </ul>
+    </div>
+
+    <div id="shop">
+        <h2>Shop</h2>
+        <div class="upgradeOption" id="upgradedLayoutOption">
+            <p>Upgrade Layout (Cost: 1000 Coins)</p>
+            <button id="upgradeButton">Upgrade</button>
+        </div>
+        <div class="upgradeOption" id="upgradedCatOption">
+            <p>Upgrade Soggy Cat (+5 coins per sec) (Cost: 5000 Coins)</p>
+            <button id="upgradeSoggyCatButton">Upgrade</button>
+        </div>
+        <div class="upgradeOption" id="upgradedWerewolfOption">
+            <p>Upgrade Werewolf (+10 coins per sec) (Cost: 10000 Coins)</p>
+            <button id="upgradeWerewolfButton">Upgrade</button>
+        </div>
+        <div class="upgradeOption" id="kjFreakyGyatOption">
+            <p>Upgrade KJ Freaky Gyat (Cost: 15000 Coins)</p>
+            <button id="kjFreakyGyatButton">Upgrade</button>
+        </div>
+    </div>
+
+    <button id="saveButton">Save Progress</button>
+    <button id="rebirthButton">Rebirth (Cost: 1,000,000 Coins)</button>
+
+    <div id="rebirthDisplay">
+        Rebirths: <span id="rebirthCount">0</span>
+    </div>
+
+    <script>
+        // Retrieve stored data from localStorage
+        let savedData = JSON.parse(localStorage.getItem('catRNGGame')) || {
+            coinCount: 0,
+            soggyCatLevel: 0,
+            werewolfLevel: 0,
+            kjFreakyGyatLevel: 0,
+            upgradedLayout: false,
+            rebirthCount: 0,
+            autoSkip: false
+        };
+
+        let coinCount = savedData.coinCount;
+        let soggyCatLevel = savedData.soggyCatLevel;
+        let werewolfLevel = savedData.werewolfLevel;
+        let kjFreakyGyatLevel = savedData.kjFreakyGyatLevel;
+        let upgradedLayout = savedData.upgradedLayout;
+        let rebirthCount = savedData.rebirthCount;
+        let autoSkip = savedData.autoSkip;
+
+        let coinDisplay = document.getElementById("coinCount");
+        let shop = document.getElementById("shop");
+        let rollButton = document.getElementById("rollButton");
+        let toggleChanceButton = document.getElementById("toggleChanceButton");
+        let toggleSkipButton = document.getElementById("toggleSkipButton");
+        let autoSkipButton = document.getElementById("autoSkipButton");
+        let rebirthButton = document.getElementById("rebirthButton");
+        let rebirthDisplay = document.getElementById("rebirthCount");
+        let saveButton = document.getElementById("saveButton");
+        let chanceList = document.getElementById("chanceList");
+        let kjFreakyGyatButton = document.getElementById("kjFreakyGyatButton");
+
+        // Display the loaded values
+        coinDisplay.textContent = coinCount;
+        rebirthDisplay.textContent = rebirthCount;
+
+        // Show shop on roll
+        rollButton.addEventListener('click', function() {
+            let rollResult = Math.floor(Math.random() * 100) + 1;
+            coinCount += rollResult;
+            coinDisplay.textContent = coinCount;
+
+            // Show shop after rolling
+            shop.classList.remove("hidden");
+        });
+
+        // Toggle Chance List visibility
+        toggleChanceButton.addEventListener('click', function() {
+            if (chanceList.classList.contains('hidden')) {
+                chanceList.classList.remove('hidden');
+                toggleChanceButton.textContent = "Close Chance List";
+            } else {
+                chanceList.classList.add('hidden');
+                toggleChanceButton.textContent = "Open Chance List";
+            }
+        });
+
+        // Click Toggle Skip
+        toggleSkipButton.addEventListener('click', function() {
+            if (!autoSkip) {
+                autoSkip = true;
+                alert("Auto Skip activated! You will skip low chance rolls.");
+                toggleSkipButton.textContent = "Click to Disable Skip";
+            } else {
+                autoSkip = false;
+                alert("Auto Skip deactivated!");
+                toggleSkipButton.textContent = "Click to Toggle Skip";
+            }
+        });
+
+        // KJ Freaky Gyat Upgrade Button
+        kjFreakyGyatButton.addEventListener('click', function() {
+            if (coinCount >= 15000 && kjFreakyGyatLevel === 0) {
+                coinCount -= 15000;
+                kjFreakyGyatLevel = 1;
+                coinDisplay.textContent = coinCount;
+                alert("KJ Freaky Gyat Upgrade Purchased! You now earn +20 coins per second.");
+            } else if (kjFreakyGyatLevel > 0) {
+                alert("KJ Freaky Gyat has already been upgraded!");
+            } else {
+                alert("You don't have enough coins to purchase this upgrade!");
+            }
+        });
+
+        // Auto Skip Button functionality
+        autoSkipButton.addEventListener('click', function() {
+            if (coinCount >= 2000 && !autoSkip) {
+                coinCount -= 2000;
+                autoSkip = true;
+                coinDisplay.textContent = coinCount;
+                alert("Auto Skip activated! You will skip low chance rolls.");
+            } else if (autoSkip) {
+                alert("Auto Skip is already active.");
+            } else {
+                alert("You don't have enough coins!");
+            }
+        });
+
+        // Roll Button: Adjust chance system
+        rollButton.addEventListener('click', function() {
+            let rollResult = Math.floor(Math.random() * 100) + 1;
+            coinCount += rollResult;
+            coinDisplay.textContent = coinCount;
+
+            // Determine rarity based on chances
+            let selectedRarity = determineRarity();
+            if (autoSkip && (selectedRarity === "Common" || selectedRarity === "Uncommon")) {
+                alert(`Auto Skip activated. You skipped a ${selectedRarity} roll!`);
+            } else {
+                alert(`You rolled a ${selectedRarity}!`);
+            }
+
+            // Show shop after rolling
+            shop.classList.remove("hidden");
+        });
+
+        // Function to determine rarity based on chances
+        function determineRarity() {
+            const rarityChances = [
+                { rarity: 'Common', chance: 80 },
+                { rarity: 'Uncommon', chance: 75 },
+                { rarity: 'Rare', chance: 50 },
+                { rarity: 'Epic', chance: 35 },
+                { rarity: 'Legendary', chance: 10 },
+                { rarity: 'Mythical', chance: 5 },
+                { rarity: 'Secret', chance: 0.5 }
+            ];
+
+            let roll = Math.random() * 100;
+            let cumulativeChance = 0;
+
+            for (let i = 0; i < rarityChances.length; i++) {
+                cumulativeChance += rarityChances[i].chance;
+                if (roll <= cumulativeChance) {
+                    return rarityChances[i].rarity;
+                }
+            }
+            return 'Common'; // Default fallback
+        }
+
+        // Save the game progress
+        saveButton.addEventListener('click', function() {
+            localStorage.setItem('catRNGGame', JSON.stringify({
+                coinCount: coinCount,
+                soggyCatLevel: soggyCatLevel,
+                werewolfLevel: werewolfLevel,
+                kjFreakyGyatLevel: kjFreakyGyatLevel,
+                upgradedLayout: upgradedLayout,
+                rebirthCount: rebirthCount,
+                autoSkip: autoSkip
+            }));
+            alert("Progress saved!");
+        });
+
+        // Simulate coins per second for Soggy Cat and Werewolf upgrades
+        setInterval(function() {
+            coinCount += soggyCatLevel * 5 + werewolfLevel * 10 + kjFreakyGyatLevel * 20;
+            coinDisplay.textContent = coinCount;
+        }, 1000);
+    </script>
+</body>
+</html>
